@@ -1,30 +1,34 @@
 {
 	"info": {
-		"_postman_id": "7be2ce52-c966-495e-9282-99a392cc2bae",
+		"_postman_id": "e90dfa55-f995-4399-8bf7-d764bab01891",
 		"name": "AutomacaoPartners",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21745654",
-		"_collection_link": "https://solar-meadow-482845.postman.co/workspace/BackEnd-QACoders~bb1edbd8-8b7f-4299-99e4-1b2df2fa3de5/collection/21745654-7be2ce52-c966-495e-9282-99a392cc2bae?action=share&source=collection_link&creator=21745654"
+		"_exporter_id": "24047493"
 	},
 	"item": [
 		{
-			"name": "Login",
+			"name": "Login usuario Admin",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
+							"pm.environment.set(\"Token\", JSON.parse(responseBody).token)\r",
 							"\r",
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
-							"});\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let MailLogin = pm.environment.get(\"MailAdmin\")\r",
+							"let PassLogin =  pm.environment.get(\"PassWordAdmin\")\r",
 							"\r",
-							"const response = pm.response.json();\r",
-							"pm.environment.set(\"token_login\", response.token);\r",
-							"\r",
-							"pm.test(\"Login efetuado com sucesso!\", function () {\r",
-							"    pm.expect(response.msg).to.eql(\"Olá Qa-Coders-SYSADMIN, autenticação autorizada com sucesso!\")\r",
-							"});\r",
 							""
 						],
 						"type": "text/javascript"
@@ -32,14 +36,11 @@
 				}
 			],
 			"request": {
-				"auth": {
-					"type": "noauth"
-				},
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"mail\": \"{{LoginUser}}\",\r\n    \"password\": \"{{Password}}\"\r\n}",
+					"raw": "{\r\n    \"mail\":\"{{MailAdmin}}\",\r\n    \"password\": \"{{PassWordAdmin}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -47,13 +48,9 @@
 					}
 				},
 				"url": {
-					"raw": "https://develop.qacoders-academy.com.br/api/login",
-					"protocol": "https",
+					"raw": "{{url}}/api/login",
 					"host": [
-						"develop",
-						"qacoders-academy",
-						"com",
-						"br"
+						"{{url}}"
 					],
 					"path": [
 						"api",
@@ -64,24 +61,57 @@
 			"response": []
 		},
 		{
-			"name": "Partners - GET",
+			"name": "Get Department",
 			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
-							"});"
+							"});\r",
+							"\r",
+							"jasonData = pm.response.json();\r",
+							"idDepartamento2 = pegarDados(jasonData)\r",
+							"nameDepartamento2 =pegarDadosName(jasonData)\r",
+							"\r",
+							"\r",
+							"\r",
+							"function pegarDados(jasonData){\r",
+							"    var idDepartamento = []\r",
+							"    var data = jasonData;\r",
+							"    console.log(data)\r",
+							"    for (let i = 0; i < data.length; i++){\r",
+							"        var pega_id = idDepartamento.push(data[i]._id)\r",
+							"        console.log(idDepartamento)\r",
+							"}\r",
+							"return idDepartamento\r",
+							"}\r",
+							"\r",
+							"\r",
+							"function pegarDadosName(jasonData){\r",
+							"    var nameDepartamento = []\r",
+							"    var data = jasonData;\r",
+							"    for (let i = 0; i < data.length; i++){\r",
+							"        var pega_name = nameDepartamento.push(data[i].departmentName)\r",
+							"        console.log(nameDepartamento)\r",
+							"}\r",
+							"return nameDepartamento\r",
+							"\r",
+							"}\r",
+							"    \r",
+							"function RandomizaLista(lista) {\r",
+							"    randomItem = lista[Math.floor(Math.random()* lista.length)]\r",
+							"    getIndex = lista.indexOf(randomItem)\r",
+							"    return getIndex\r",
+							"    console.log(getIndex)\r",
+							"}\r",
+							"\r",
+							"let indexId = RandomizaLista(idDepartamento2)\r",
+							"console.log(indexId)\r",
+							"pm.environment.set(\"idDepartament\", idDepartamento2[indexId])\r",
+							"pm.environment.set(\"departmentName\", nameDepartamento2[indexId])\r",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -96,12 +126,17 @@
 					"apikey": [
 						{
 							"key": "value",
-							"value": "{{token_login}}",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
 							"type": "string"
 						},
 						{
 							"key": "key",
-							"value": "authorization",
+							"value": "Authorization",
 							"type": "string"
 						}
 					]
@@ -110,64 +145,47 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": ""
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
-					"raw": "{{dev}}/partner/",
+					"raw": "{{url}}/api/department",
 					"host": [
-						"{{dev}}"
+						"{{url}}"
 					],
 					"path": [
-						"partner",
-						""
+						"api",
+						"department"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "partners - Automatizado",
+			"name": "Create-Position",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
+							"pm.variables.get(\"idDepartament\")\r",
+							"function gerarCargo() {\r",
 							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
+							"    var cargo = [\"Desenvolvedor\", \"Devops\", \"Agente Administrativo\", \"Tech Recruiter\", \"Analista Comercial\", \"CEO\", \"Product Owner\", \"UX\"];\r",
 							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
+							"    var randomItem = cargo[Math.floor(Math.random() * cargo.length)];\r",
 							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
+							"    return randomItem;\r",
+							"}\r",
+							"let teste = pm.variables.replaceIn('{{$randomJobArea}}')\r",
+							"pm.environment.set(\"Cargo\", gerarCargo() + \"\" + teste);\r",
 							"\r",
 							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
+							" "
 						],
 						"type": "text/javascript"
 					}
@@ -176,271 +194,44 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 201\", function () {\r",
+							"pm.test(\"Status code 201- Created\", function(){\r",
 							"    pm.response.to.have.status(201);\r",
 							"});\r",
+							"let jasonData = pm.response.json();\r",
 							"\r",
-							"pm.environment.set(\"_id\",JSON.parse(responseBody)._id);\r",
+							"//salvando o id do cargo \r",
+							"let idCargo = jasonData.newPosition._id\r",
+							"pm.environment.set(\"idCargo\", idCargo);\r",
 							"\r",
-							"pm.test(\"Check is companyName is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"CompanyName\")).to.eql(JSON.parse(responseBody).companyName);\r",
+							"//testando se os valores são correspondentes\r",
+							"pm.test(\"Verificando cargo is true\", function(){\r",
+							"    pm.expect(pm.variables.get(\"Cargo\")).to.eql(jasonData.newPosition.positionName);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Check is responsibleName is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"FullName\")).to.eql(JSON.parse(responseBody).responsibleName);\r",
+							"pm.test (\"Verificando departamento is true\", function(){\r",
+							"    pm.expect(pm.variables.get(\"idDepartament\")).to.eql(jasonData.newPosition.department);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Check is mail is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Mail\")).to.eql(JSON.parse(responseBody).mail);\r",
+							"//Verificando msg\r",
+							"pm.test(\"Verificando mensagem de sucesso\",function(){\r",
+							"    pm.expect(jasonData.msg).to.eql(\"Cadastro realizado com sucesso.\");\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Check is Phone is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Phone\")).to.eql(JSON.parse(responseBody).phone);\r",
+							"//testes departamento\r",
+							"pm.test(\"departamento preenchido\",function(){\r",
+							"    pm.expect(jasonData.newPosition.departament).to.not.null;\r",
+							"    pm.expect(jasonData.newPosition.departament).to.not.eql(\"\");\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Check is cnpj is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"id_company\")).to.eql(JSON.parse(responseBody).cnpj);\r",
+							"//teste cargo\r",
+							"pm.test(\"cargo preenchido\",function(){\r",
+							"    pm.expect(jasonData.newPosition.positionName).to.not.null;\r",
+							"    pm.expect(jasonData.newPosition.positionName).to.not.eql(\"\");\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Check is zipCode is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"ZipCode\")).to.eql(JSON.parse(responseBody).address[0].zipCode);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is city is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"City\")).to.eql(JSON.parse(responseBody).address[0].city);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is state is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Uf\")).to.eql(JSON.parse(responseBody).address[0].state);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is Distrit is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"district\")).to.eql(JSON.parse(responseBody).address[0].district);\r",
-							"});\r",
-							"\r",
-							"\r",
-							"pm.test(\"Check is street is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Street\")).to.eql(JSON.parse(responseBody).address[0].street);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is addressNumber is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"AddressNumber\")).to.eql(parseInt(JSON.parse(responseBody).address[0].number));\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is complement is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Complement\")).to.eql(JSON.parse(responseBody).address[0].complement);\r",
-							"});\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"let response = pm.response.json();\r",
-							"pm.environment.set(\"ID\", response._id);\r",
-							"\r",
-							"// console.log(JSON.parse(responseBody)._id)"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Update",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"pm.environment.set(\"_id\",JSON.parse(responseBody)._id);\r",
-							"\r",
-							"pm.test(\"Check is companyName is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"CompanyName\")).to.eql(JSON.parse(responseBody).companyName);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is responsibleName is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"FullName\")).to.eql(JSON.parse(responseBody).responsibleName);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is mail is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Mail\")).to.eql(JSON.parse(responseBody).mail);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is cnpj is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"IdCompany\")).to.not.eql(JSON.parse(responseBody).cnpj);\r",
-							"});\r",
-							"pm.test(\"Check is zipCode is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"ZipCode\")).to.eql(JSON.parse(responseBody).address[0].zipCode);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is street is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Street\")).to.eql(JSON.parse(responseBody).address[0].street);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is neighbourhood is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"district\")).to.eql(JSON.parse(responseBody).address[0].district);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is addressNumber is True\", function () {\r",
-							"    const numberPaser =  parseInt(JSON.parse(responseBody).address[0].number);;\r",
-							"\r",
-							"const number = parseInt(numberPaser)\r",
-							"    pm.expect(pm.variables.get(\"AddressNumber\")).to.eql(number);\r",
-							"\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is complement is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Complement\")).to.eql(JSON.parse(responseBody).address[0].complement);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is city is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"City\")).to.eql(JSON.parse(responseBody).address[0].city);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Check is state is True\", function () {\r",
-							"    pm.expect(pm.variables.get(\"Uf\")).to.eql(JSON.parse(responseBody).address[0].state);\r",
-							"});\r",
-							"\r",
-							"\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "apikey"
-				},
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner/{{ID}}",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner",
-						"{{ID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Manual",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"});\r",
-							"pm.test(\"Body matches string\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"deletado com sucesso!.\");\r",
+							"//formato do cargo\r",
+							"pm.test(\"Permite letras e &\", function () { \r",
+							"     pm.expect(jasonData.newPosition.positionName).to.match(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ&\\s]+$/); \r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -453,21 +244,26 @@
 					"apikey": [
 						{
 							"key": "value",
-							"value": "{{token_login}}",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
 							"type": "string"
 						},
 						{
 							"key": "key",
-							"value": "authorization",
+							"value": "Authorization",
 							"type": "string"
 						}
 					]
 				},
-				"method": "DELETE",
+				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"companyName\":\"QA Coders\",\r\n    \"responsibleName\":\"William Alves\",\r\n    \"mail\":\"qacoders@contato.com.br\",\r\n    \"phone\":\"19999999999\",\r\n    \"cnpj\":\"28821853000199\",\r\n    \"address\": [\r\n        {\r\n        \"country\": \"Brasil\",\r\n        \"zipCode\":\"13053-003\",\r\n        \"city\":\"São Paulo\",\r\n        \"state\":\"SP\",\r\n        \"district\": \"São Jorge\",\r\n        \"street\": \"Avenida Afonso Pena\",\r\n        \"number\": \"1243\",\r\n        \"complement\": \"Viela 8\"\r\n        }\r\n        ],\r\n\r\n    \"audit\": [\r\n        {\r\n            \"loginUser\": \"{{LoginUser}}\",\r\n            \"registration\":\"{{Registration}}\",\r\n            \"idCompany\": \"{{IdCompany}}\"\r\n        }\r\n    ]\r\n}\r\n\r\n\r\n",
+					"raw": "{\r\n    \"positionName\": \"{{Cargo}}\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -475,62 +271,26 @@
 					}
 				},
 				"url": {
-					"raw": "{{dev}}/partner/{{ID}}",
+					"raw": "{{url}}/api/positions",
 					"host": [
-						"{{dev}}"
+						"{{url}}"
 					],
 					"path": [
-						"partner",
-						"{{ID}}"
+						"api",
+						"positions"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "partners - Parceiro não existe",
+			"name": "Include Position Repeat- Falha",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -539,12 +299,798 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
+							"pm.test(\"Status code 409- Conflito\", function(){\r",
+							"    pm.response.to.have.status(409);\r",
+							"});\r",
+							"\r",
+							"let jasonData = pm.response.json();\r",
+							"\r",
+							"\r",
+							"//Verificando msg\r",
+							"pm.test(\"Verificando se mensagem está correta\",function(){\r",
+							"    pm.expect(jasonData.alert[0]).to.eql(\"Não é possível salvar esse registro. Cargo já cadastrado no sistema.\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"positionName\": \"{{Cargo}}\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/positions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "positionName is empty",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"\r",
+							"function gerarCargo() {\r",
+							"\r",
+							"    var cargo = [\"Desenvolvedor\", \"Devops\", \"Agente Administrativo\", \"Tech Recruiter\", \"Analista Comercial\", \"CEO\", \"Product Owner\", \"UX\"];\r",
+							"\r",
+							"    var randomItem = cargo[Math.floor(Math.random() * cargo.length)];\r",
+							"\r",
+							"    return randomItem;\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"Cargo\", gerarCargo()+ \"&\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 400\", function(){\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"let jasonData = pm.response.json();\r",
+							"\r",
+							"\r",
+							"\r",
+							"//Verificando msg\r",
+							"pm.test(\"Verificando mensagem\",function(){\r",
+							"    pm.expect(jasonData.error[0]).to.eql(\"O campo 'cargo' é obrigatório.\");\r",
+							"});\r",
+							"\r",
+							"//testes requisição \r",
+							"pm.test(\"cargo está vazio\",function(){\r",
+							"    var requestBody = pm.request.body.raw; \r",
+							"    let cargo = JSON.parse(requestBody).positionName\r",
+							"   pm.expect(cargo).to.be.empty;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"positionName\": \"\",\r\n    \"department\": \"{{departmentName}}\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/positions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Position of allowing letters and a special character &",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.get(\"departmentName\")\r",
+							"pm.variables.get(\"idDepartament\")\r",
+							"\r",
+							"function gerarCargo() {\r",
+							"\r",
+							"    var cargo = [\"Desenvolvedor\", \"Devops\", \"Agente Administrativo\", \"Tech Recruiter\", \"Analista Comercial\", \"CEO\", \"Product Owner\", \"UX\"];\r",
+							"\r",
+							"    var randomItem = cargo[Math.floor(Math.random() * cargo.length)];\r",
+							"\r",
+							"    return randomItem;\r",
+							"    console.log(randomItem)\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"Cargo\", gerarCargo());\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 400\", function(){\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"let jasonData = pm.response.json();\r",
+							"\r",
+							"\r",
+							"\r",
+							"//Verificando msg\r",
+							"pm.test(\"Verificando mensagem\",function(){\r",
+							"    pm.expect(jasonData.error[0]).to.eql(\"O campo 'cargo' só pode conter letras e o caractere especial '&'.\");\r",
+							"});\r",
+							"\r",
+							"//testes requisição \r",
+							"pm.test(\"campo de teste ok\",function(){\r",
+							"    var requestBody = pm.request.body.raw; \r",
+							"    let cargo = JSON.parse(requestBody).positionName\r",
+							"   pm.expect(cargo).to.be.not.match(/^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ&\\s]+$/); \r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"positionName\": \"{{Cargo}}%1\",\r\n     \"department\": \"{{departmentName}}\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/positions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PositionName must allow a maximum of 50 characters",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.get(\"departmentName\")\r",
+							"pm.variables.get(\"idDepartament\")\r",
+							"\r",
+							"function gerarCargo() {\r",
+							"\r",
+							"    var cargo = [\"Desenvolvedor\", \"Devops\", \"Agente Administrativo\", \"Tech Recruiter\", \"Analista Comercial\", \"CEO\", \"Product Owner\", \"UX\"];\r",
+							"\r",
+							"    var randomItem = cargo[Math.floor(Math.random() * cargo.length)];\r",
+							"\r",
+							"    return randomItem;\r",
+							"    console.log(randomItem)\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"Cargo\", gerarCargo());\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 400\", function(){\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"let jasonData = pm.response.json();\r",
+							"\r",
+							"\r",
+							"\r",
+							"//Verificando msg\r",
+							"pm.test(\"Verificando mensagem\",function(){\r",
+							"    pm.expect(jasonData.error[0]).to.eql(\"O campo 'cargo' deve possuir no máximo 50 caracteres.\");\r",
+							"});\r",
+							"\r",
+							"//testes requisição \r",
+							"pm.test(\"campo de teste ok\",function(){\r",
+							"    var requestBody = pm.request.body.raw; \r",
+							"    let cargo = JSON.parse(requestBody).positionName\r",
+							"   pm.expect(cargo.length > 50) \r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"positionName\":\"fkfjdidosdfhioirufhjndjfjoforifoiodsfkjsdkfjureiwuefhuf\",\r\n     \"department\": \"{{departmentName}}\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/positions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "positionName is null",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.get(\"departmentName\")\r",
+							"pm.variables.get(\"idDepartament\")\r",
+							"\r",
+							"function gerarCargo() {\r",
+							"\r",
+							"    var cargo = [\"Desenvolvedor\", \"Devops\", \"Agente Administrativo\", \"Tech Recruiter\", \"Analista Comercial\", \"CEO\", \"Product Owner\", \"UX\"];\r",
+							"\r",
+							"    var randomItem = cargo[Math.floor(Math.random() * cargo.length)];\r",
+							"\r",
+							"    return randomItem;\r",
+							"}\r",
+							"\r",
+							"pm.environment.set(\"Cargo\", gerarCargo());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 400\", function(){\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"let jasonData = pm.response.json();\r",
+							"\r",
+							"\r",
+							"\r",
+							"//Verificando msg\r",
+							"pm.test(\"Verificando mensagem\",function(){\r",
+							"    pm.expect(jasonData.error[0]).to.eql(\"O campo 'cargo' é obrigatório.\");\r",
+							"});\r",
+							"\r",
+							"//testes requisição do departamento\r",
+							"pm.test(\"cargo está nulo\",function(){\r",
+							"    var requestBody = pm.request.body.raw; \r",
+							"    let cargo = JSON.parse(requestBody).positionName\r",
+							"    pm.expect(cargo).to.null;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"positionName\": null,\r\n    \"department\": \"{{departmentName}}\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/positions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Show-Position",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verifica se apresenta a lista de Cargos\", function(){\r",
+							"    pm.expect(pm.response.json().positions[0])\r",
+							"});\r",
+							"\r",
+							"let tamanho = []\r",
+							"tamanho = pm.response.json().positions.length\r",
+							"pm.environment.set(\"tamanhoListaCargos\", tamanho)\r",
+							"\r",
+							"console.log(tamanho)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/positions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Count-Position",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"jasonData = pm.response.json()\r",
+							"pm.environment.set(\"Count\", jasonData.count )\r",
+							"\r",
+							"/*\r",
+							"pm.test(\"Verificando se count tem o tamanho correto\", function(){\r",
+							"   pm.expect(pm.variables.get(\"tamanhoListaCargos\")).to.eql(jasonData.count)\r",
+							"});\r",
+							"*/"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.get(\"tamanhoListaCargos\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/positions/count",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions",
+						"count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Index-Position",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.get(\"idCargo\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"jasonData = pm.response.json()\r",
+							"\r",
+							"pm.test(\"Verificando se id is true\", function(){\r",
+							"   pm.expect(pm.variables.get(\"idCargo\")).to.eql(jasonData.position._id)\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"Cargo\", jasonData.position.positionName)\r",
+							"pm.environment.set(\"idCargo\", jasonData.position._id)\r",
+							"pm.environment.set(\"idDepartament\", jasonData.position.department._id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/positions/{{idCargo}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions",
+						"{{idCargo}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update-Position",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let cargoantigo = pm.variables.get(\"Cargo\")\r",
+							"\r",
+							"pm.environment.set(\"CargoAtualizar\", cargoantigo + \"Test&\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"jasonData=pm.response.json();\r",
+							"\r",
+							"pm.test(\"Verificando mensagem\", function(){\r",
+							"    pm.expect(jasonData.msg).to.equal(\"Cadastro atualizado com sucesso!\")\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verificando se cargo foi atualizado\", function(){\r",
+							"    pm.expect(jasonData.updatedPosition.positionName).to.equal(pm.variables.get(\"CargoAtualizar\"))\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"positionName\": \"{{CargoAtualizar}}\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/positions/{{idCargo}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"positions",
+						"{{idCargo}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update - positionName is empty",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.get(\"idDepartament\")"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code 400\", function(){\r",
 							"    pm.response.to.have.status(400);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"Parceiro não existente\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Esse parceiro não existe em nossa base de dados.\");\r",
+							"jasonData = pm.response.json();\r",
+							"pm.test(\"Verificando mensagem\", function(){\r",
+							"    pm.expect(jasonData.error[0]).to.equal(\"O campo 'cargo' é obrigatório.\")\r",
 							"});\r",
 							"\r",
 							"\r",
@@ -556,19 +1102,30 @@
 			],
 			"request": {
 				"auth": {
-					"type": "apikey"
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
 				},
 				"method": "PUT",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"positionName\": \" \",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -576,62 +1133,27 @@
 					}
 				},
 				"url": {
-					"raw": "{{dev}}/partner/{{ID}}",
+					"raw": "{{url}}/api/positions/{{idCargo}}",
 					"host": [
-						"{{dev}}"
+						"{{url}}"
 					],
 					"path": [
-						"partner",
-						"{{ID}}"
+						"api",
+						"positions",
+						"{{idCargo}}"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "partners - CompanyName is field",
+			"name": "Update - positionName is null",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
+							"pm.variables.get(\"idDepartament\")"
 						],
 						"type": "text/javascript"
 					}
@@ -640,13 +1162,23 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
+							"pm.test(\"Status code 400\", function(){\r",
 							"    pm.response.to.have.status(400);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"CompanyName é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo Nome da companhia é obrigatório.\");\r",
+							"jasonData = pm.response.json();\r",
+							"pm.test(\"Verificando mensagem\", function(){\r",
+							"    pm.expect(jasonData.error[0]).to.equal(\"O campo 'cargo' é obrigatório.\")\r",
 							"});\r",
+							"\r",
+							"//testes requisição do departamento\r",
+							"pm.test(\" cargo está nulo\",function(){\r",
+							"    var requestBody = pm.request.body.raw; \r",
+							"    let cargo = JSON.parse(requestBody).positionName\r",
+							"    pm.expect(cargo).to.null;\r",
+							"});\r",
+							"\r",
+							"\r",
 							""
 						],
 						"type": "text/javascript"
@@ -654,18 +1186,31 @@
 				}
 			],
 			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"positionName\": null,\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -673,61 +1218,27 @@
 					}
 				},
 				"url": {
-					"raw": "{{dev}}/partner",
+					"raw": "{{url}}/api/positions/{{idCargo}}",
 					"host": [
-						"{{dev}}"
+						"{{url}}"
 					],
 					"path": [
-						"partner"
+						"api",
+						"positions",
+						"{{idCargo}}"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "partners - CompanyName it can't especial caracter",
+			"name": "Update - Position of allowing letters and a special character &",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
+							"pm.variables.get(\"idDepartament\")"
 						],
 						"type": "text/javascript"
 					}
@@ -736,13 +1247,16 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
+							"pm.test(\"Status code 400\", function(){\r",
 							"    pm.response.to.have.status(400);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"CompanyName deve conter apenas letras, números e espaços em branco!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo Nome da companhia deve conter apenas letras, números e espaços em branco.\");\r",
+							"jasonData = pm.response.json();\r",
+							"pm.test(\"Verificando mensagem\", function(){\r",
+							"    pm.expect(jasonData.error[0]).to.equal(\"O campo 'cargo' só pode conter letras e o caractere especial '&'.\")\r",
 							"});\r",
+							"\r",
+							"\r",
 							""
 						],
 						"type": "text/javascript"
@@ -750,18 +1264,31 @@
 				}
 			],
 			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"*\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"positionName\": \"{{Cargo}}%1\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -769,61 +1296,27 @@
 					}
 				},
 				"url": {
-					"raw": "{{dev}}/partner",
+					"raw": "{{url}}/api/positions/{{idCargo}}",
 					"host": [
-						"{{dev}}"
+						"{{url}}"
 					],
 					"path": [
-						"partner"
+						"api",
+						"positions",
+						"{{idCargo}}"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "partners - CompanyName caractere limit",
+			"name": "Update - PositionName must allow a maximum of 50 characters",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
+							"pm.variables.get(\"idDepartament\")"
 						],
 						"type": "text/javascript"
 					}
@@ -832,13 +1325,18 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
+							"pm.test(\"Status code 400\", function(){\r",
 							"    pm.response.to.have.status(400);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"CompanyName deve conter até 100 caracteres!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Limite de caracteres excedido. É pemitido apenas 100 caracteres no campo Nome da empresa.\");\r",
+							"jasonData = pm.response.json();\r",
+							"pm.test(\"Verificando mensagem\", function(){\r",
+							"    pm.expect(jasonData.error[0]).to.equal(\"O campo 'cargo' deve possuir no máximo 50 caracteres.\")\r",
 							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
 							""
 						],
 						"type": "text/javascript"
@@ -846,18 +1344,31 @@
 				}
 			],
 			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaq\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
+					"raw": "{\r\n    \"positionName\": \"fkfjdidosdfhioirufhjndjfjoforifoiodsfkjsdkfjureiwuefhuf\",\r\n    \"departmentId\": \"{{idDepartament}}\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -865,61 +1376,27 @@
 					}
 				},
 				"url": {
-					"raw": "{{dev}}/partner",
+					"raw": "{{url}}/api/positions/{{idCargo}}",
 					"host": [
-						"{{dev}}"
+						"{{url}}"
 					],
 					"path": [
-						"partner"
+						"api",
+						"positions",
+						"{{idCargo}}"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "partners - responsibleName is field",
+			"name": "Update-Status-Position",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
+							"pm.environment.get(\"idCargo\")"
 						],
 						"type": "text/javascript"
 					}
@@ -928,878 +1405,13 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
+							"pm.test(\"Status code is 200-Solicitação bem sucedida\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"ResponsibleName é obrigatório\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo Nome do responsável é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - responsibleName is complete name",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"ResponsibleName dever ser nome completo!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Informe o nome completo do responsável.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"teste\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - responsibleName limit caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"ResponsibleName deve conter até 100 caracteres e ser nome completo!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Limite de caracteres excedido. É pemitido apenas 100 caracteres no campo Nome do responsável.\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"Informe o nome completo do responsável.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaq\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Mail is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Email é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo Email é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Mail invald format",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Mail invalido\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O e-mail informado é inválido.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"teste\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Phone is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Phone é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo Telefone é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Phone message caracter",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Phone, verificação dos caracteres!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O telefone deve possuir de 9 a 15 caracteres.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"123456\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Phone message special caracter",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Phone, verificação dos caracteres e caracteres especiais\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O Número de telefone deve conter apenas dígitos numéricos.\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"O telefone deve possuir de 9 a 15 caracteres.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"********\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Country is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Country é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo País é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - CNPJ is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"CNPJ é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo CNPJ é obrigatório.\");\r",
+							"//testando msg\r",
+							"pm.test (\"Verificando mensagem de sucesso\", function(){\r",
+							"    pm.expect(\"Cargo inativado com sucesso!\").to.eql(JSON.parse(responseBody).msg);\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1807,18 +1419,31 @@
 				}
 			],
 			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1826,61 +1451,28 @@
 					}
 				},
 				"url": {
-					"raw": "{{dev}}/partner",
+					"raw": "{{url}}/api/positions/{{idCargo}}/inactivate",
 					"host": [
-						"{{dev}}"
+						"{{url}}"
 					],
 					"path": [
-						"partner"
+						"api",
+						"positions",
+						"{{idCargo}}",
+						"inactivate"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "partners - CNPJ already registered",
+			"name": "Delete-Position",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
+							"pm.environment.get(\"idCargo\")"
 						],
 						"type": "text/javascript"
 					}
@@ -1889,12 +1481,13 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"Status code is 409\", function () {\r",
-							"    pm.response.to.have.status(409);\r",
+							"pm.test(\"Status code is 202-Solicitação aceita\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
 							"});\r",
 							"\r",
-							"pm.test(\"CNPJ já cadastrado!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"CNPJ já cadastrado.\");\r",
+							"//testando msg\r",
+							"pm.test (\"Verificando mensagem de sucesso\", function(){\r",
+							"    pm.expect(\"Cargo removido com sucesso!\").to.eql(JSON.parse(responseBody).msg);\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -1902,2047 +1495,37 @@
 				}
 			],
 			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"12345240873949\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{Token}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "Authorization",
+							"type": "string"
 						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
 					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - CNPJ quantidade deve ser 14 digitos",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
 				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"CNPJ, quantidade de digitos!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"A quantidade de dígitos do CNPJ ideal é de 14.\");\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"111112\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
+				"method": "DELETE",
+				"header": [],
 				"url": {
-					"raw": "{{dev}}/partner",
+					"raw": "{{url}}/api/positions/{{idCargo}}",
 					"host": [
-						"{{dev}}"
+						"{{url}}"
 					],
 					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - CNPJ deve conter apenas digitos numéricos",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"CNPJ, quantidade de digitos e deve ser apenas numéros!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O CNPJ deve conter apenas dígitos numéricos.\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"A quantidade de dígitos do CNPJ ideal é de 14.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"********\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Country is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Pais é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo País é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - CEP é obrigatório",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"CEP é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'CEP' é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - CEP quantidade digitos e formato",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"CEP, quantidade ideal e o formato!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'CEP' deve conter 8 dígitos\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"00000000000000000000000000000000000000\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners -City is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Cidade é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'cidade' é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners -City limit caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Cidade limite de caracteres!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'cidade' deve possuir no máximo 50 caracteres.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaq\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners -City number is not allowed",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Cidade, não é permitido números!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'cidade' só pode conter letras e os caracteres especiais 'ª', 'º', '‘' e '-'\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"1\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - State is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Estado é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'estado' é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - State quantidade permitida",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Estado, quantidade permitida!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'estado' deve possuir 2 caracteres.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"1\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - State Letra Maiúscula",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Estado, só é permitido letras maiúsculas!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'estado' só pode conter letras maiúsculas\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"qe\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - District is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Bairro é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'bairro' é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - District limit caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Bairro só é permitido letras, numeros e alguns caracteres especiais! 'ª', 'º', '‘' e '-'\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'bairro' só pode conter letras, números e os caracteres especiais 'ª', 'º', '‘' e '-'\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"*****!@#\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - District limit caractere special",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Bairro com limite de 50 caracteres!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'bairro' deve possuir no máximo 50 caracteres.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*q\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Street is field",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Rua é obrigatório!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'logradouro' é obrigatório.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Street limit caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Rua com limite de caracteres de 50!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'logradouro' deve possuir no máximo 80 caracteres.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaqaaaaaaaaaaaaaaaaaaaaqaaaaaaaaaa\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Street special caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Rua, permitindo apenas letras, números e caracteres espciais 'ª', 'º', '‘' e '-'!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'logradouro' só pode conter letras, números e os caracteres especiais 'ª', 'º', '‘' e '-'\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"****!!!!!\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Number limit caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Número de caracteres limitado a 10!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'número' deve possuir no máximo 10 caracteres.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"00000000000000000000000\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Number special caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Número, permitindo apenas letras, números e o caractere especial '/'\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'número' só pode conter letras, números e o caractere especial '/'\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"!!!*****\",\r\n            \"complement\": \"{{Complement}}\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Complement limit caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Complemento com limite de 80 caracteres!\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'complemento' deve possuir no máximo 80 caracteres.\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaqaaaaaaaaaa\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "partners - Complement special caractere",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"const minNumber = 100000000;\r",
-							"const maxNumber = 999999999;\r",
-							"const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;\r",
-							"\r",
-							"pm.environment.set(\"CompanyName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"FullName\", pm.variables.replaceIn('{{$randomFirstName}}') + \" \" + pm.variables.replaceIn('{{$randomFirstName}}'));\r",
-							"\r",
-							"pm.environment.set(\"AreaCode\", \"0\" + Math.floor(Math.random() * 99));\r",
-							"\r",
-							"pm.environment.set(\"Phone\", pm.environment.get(\"AreaCode\") + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"id_company\", \"12345\" + randomNumber);\r",
-							"\r",
-							"pm.environment.set(\"Mail\", Math.floor(Math.random() * 999999) + \"_qacoders\" + pm.variables.replaceIn('{{$randomEmail}}'));\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"pm.environment.set(\"ZipCode\", num5dig + \"000\");\r",
-							"\r",
-							"pm.environment.set(\"AddressNumber\", Math.floor(Math.random() * 99999));\r",
-							"\r",
-							"pm.environment.set(\"Complement\", pm.variables.replaceIn('{{$randomWord}}'));\r",
-							"\r",
-							"pm.environment.set(\"City\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"pm.environment.set(\"Street\", pm.variables.replaceIn('{{$randomStreetName}}'));\r",
-							"\r",
-							"pm.environment.set(\"Uf\", pm.variables.replaceIn('{{$randomCountryCode}}'));\r",
-							"\r",
-							"pm.environment.set(\"district\", pm.variables.replaceIn('{{$randomCity}}'));\r",
-							"\r",
-							"\r",
-							"\r",
-							"// let num5dig = 10000 + Math.floor(Math.random() * 89999)\r",
-							"// console.log(num5dig)"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {\r",
-							"    pm.response.to.have.status(400);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"Complemento, permitindo apenas letras, números e os caracteres especiais 'ª', 'º', '‘' e '-' \", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"O campo 'complemento' só pode conter letras, números e os caracteres especiais 'ª', 'º', '‘' e '-'\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"warning": "This is a duplicate header and will be overridden by the authorization header generated by Postman.",
-						"key": "Authorization",
-						"value": "{{token_login}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"companyName\": \"{{CompanyName}}\",\r\n    \"responsibleName\": \"{{FullName}}\",\r\n    \"mail\": \"{{Mail}}\",\r\n    \"phone\": \"{{Phone}}\",\r\n    \"cnpj\": \"{{id_company}}\",\r\n    \"address\": [\r\n        {\r\n            \"country\": \"Brasil\",\r\n            \"zipCode\": \"{{ZipCode}}\",\r\n            \"city\": \"{{City}}\",\r\n            \"state\": \"{{Uf}}\",\r\n            \"district\": \"{{district}}\",\r\n            \"street\": \"{{Street}}\",\r\n            \"number\": \"{{AddressNumber}}\",\r\n            \"complement\": \"!@!#@#!@#$\"\r\n        }\r\n    ]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{dev}}/partner",
-					"host": [
-						"{{dev}}"
-					],
-					"path": [
-						"partner"
+						"api",
+						"positions",
+						"{{idCargo}}"
 					]
 				}
 			},

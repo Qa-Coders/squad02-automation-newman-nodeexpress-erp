@@ -20,11 +20,11 @@ Este repositório tem uma página de publicação do "report" do teste que utili
 ```
 ## Comando para executar apenas com a Collection:
 ```sh default
-* newman run nomeCollection.json
+* newman run AutomacaoPartners.postman_collection.json
 ```
 ## Comando pra executar com as variáveis:
 ```sh default
-* newman run NomeCollection.json -e NomeEnvironments.json
+* newman run AutomacaoPartners.postman_collection.json -e Partners.postman_environment.json
 ```
 ## Comando pra instalar o Report:
 ```sh default
@@ -32,5 +32,5 @@ Este repositório tem uma página de publicação do "report" do teste que utili
 ```
 ## Comando pra executar o Newman e gerar o Relatório HTML:
 ```sh default
-* newman run nomeCollection.json -e NomeEnvironments.json -r htmlextra
+* newman run AutomacaoPartners.postman_collection.json -e Partners.postman_environment.json -r htmlextra
 ```
